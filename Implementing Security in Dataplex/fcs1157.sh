@@ -31,7 +31,7 @@ echo "Creating Dataplex zone..."
 gcloud dataplex zones create customer-raw-zone \
   --location=$REGION \
   --lake=customer-info-lake \
-  --display-name="fcss Raw Zone" \
+  --display-name="fcs Raw Zone" \
   --type=RAW \
   --resource-location-type=SINGLE_REGION || echo "Zone already exists"
 
