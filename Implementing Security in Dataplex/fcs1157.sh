@@ -25,13 +25,13 @@ gsutil mb -l $REGION gs://$BUCKET_NAME || echo "Bucket already exists"
 echo "Creating Dataplex lake..."
 gcloud dataplex lakes create customer-info-lake \
   --location=$REGION \
-  --display-name="Techcps Info Lake" || echo "Lake already exists"
+  --display-name="fcs Info Lake" || echo "Lake already exists"
 
 echo "Creating Dataplex zone..."
 gcloud dataplex zones create customer-raw-zone \
   --location=$REGION \
   --lake=customer-info-lake \
-  --display-name="Techcps Raw Zone" \
+  --display-name="fcss Raw Zone" \
   --type=RAW \
   --resource-location-type=SINGLE_REGION || echo "Zone already exists"
 
@@ -40,7 +40,7 @@ gcloud dataplex assets create customer-online-sessions \
   --location=$REGION \
   --lake=customer-info-lake \
   --zone=customer-raw-zone \
-  --display-name="Techcps Online Sessions" \
+  --display-name="fcs Online Sessions" \
   --resource-type=STORAGE_BUCKET \
   --resource-name=projects/$PROJECT_ID/buckets/$BUCKET_NAME || echo "Asset already exists"
 
