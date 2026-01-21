@@ -18,6 +18,8 @@ gcloud dataplex assets create customer-online-sessions --location=$REGION \
             --display-name="Customer Online Sessions"
 
 
+# Final message
+
 echo "${CYAN}${BOLD}Click here: "${RESET}""${BLUE}${BOLD}"https://console.cloud.google.com/dataplex/secure?resourceName=projects%2F$DEVSHELL_PROJECT_ID%2Flocations%2F$REGION%2Flakes%2Fcustomer-info-lake&project=$DEVSHELL_PROJECT_ID""${RESET}"
 
             
