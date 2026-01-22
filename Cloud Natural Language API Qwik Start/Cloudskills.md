@@ -6,9 +6,9 @@
 
 ---
 
-> ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
+✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
-**🌐Launch Cloud Shell:**
+🌐Launch Cloud Shell:
 Start your Google CloudShell session by [clicking here](https://console.cloud.google.com/home/dashboard?project=&pli=1&cloudshell=true).
 
 ### 🚨Copy and run the below commands in Cloud Shell:
@@ -49,4 +49,5 @@ gcloud ml language analyze-entities --content="Michelangelo Caravaggio, Italian 
 
 
 ---
+
 
