@@ -1,4 +1,4 @@
-### 💡 Lab Link: [Cloud Natural Language API: Qwik Start](https://www.skills.google/games/6981/labs/43370)
+### 💡 Lab Link: [Cloud Natural Language API: Qwik Start - GSP097](https://www.skills.google/games/6981/labs/43370)
 ---
 
 ### ⚠️ Disclaimer
@@ -51,6 +51,7 @@ gcloud ml language analyze-entities --content="Michelangelo Caravaggio, Italian 
 
 
 ---
+
 
 
 
