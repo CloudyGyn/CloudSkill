@@ -20,9 +20,9 @@ gcloud compute ssh centos-clean --zone=$ZONE --quiet
 ```
 
 ```
-curl -LO raw.githubusercontent.com/FutureCloudSkill/CloudSkill/master/Configuring%20IAM%20Permissions%20with%20gcloud/fcs647.sh
-sudo chmod +x fcs647.sh
-./fcs647.sh
+curl -LO raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Configuring%20IAM%20Permissions%20with%20gcloud/CloudyGyn647.sh
+sudo chmod +x CloudyGyn647.sh
+./CloudyGyn647.sh
 ```
 
 ---
@@ -41,3 +41,4 @@ sudo chmod +x fcs647.sh
 
 ### Thanks for watching and stay connected :)
 ---
+
