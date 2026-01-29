@@ -11,9 +11,9 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO raw.githubusercontent.com/FutureCloudSkill/CloudSkill/master/Develop%20and%20Secure%20APIs%20with%20Apigee%20X%20Challenge%20Lab/fcs363.sh
-sudo chmod +x fcs363.sh
-./fcs363.sh
+curl -LO raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Develop%20and%20Secure%20APIs%20with%20Apigee%20X%20Challenge%20Lab/CloudyGyn363.sh
+sudo chmod +x CloudyGyn363.sh
+./CloudyGyn363.sh
 ```
 ---
 
@@ -42,4 +42,5 @@ sudo chmod +x fcs363.sh
 
 ### Thanks for watching and stay connected :)
 ---
+
 
