@@ -17,9 +17,9 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO raw.githubusercontent.com/FutureCloudSkill/CloudSkill/master/Set%20Up%20Network%20Load%20Balancers/fcs007.sh
-sudo chmod +x fcs007.sh
-./fcs007.sh
+curl -LO raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Set%20Up%20Network%20Load%20Balancers/CloudyGyn007.sh
+sudo chmod +x CloudyGyn007.sh
+./CloudyGyn007.sh
 ```
 ---
 
@@ -38,3 +38,4 @@ sudo chmod +x fcs007.sh
 
 ### Thanks for watching and stay connected :)
 ---
+
