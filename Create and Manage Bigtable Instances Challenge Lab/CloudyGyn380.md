@@ -14,9 +14,9 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO raw.githubusercontent.com/FutureCloudSkill/CloudSkill/master/Create%20and%20Manage%20Bigtable%20Instances%20Challenge%20Lab/fcs380.sh
-sudo chmod +x fcs380.sh
-./fcs380.sh
+curl -LO raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Create%20and%20Manage%20Bigtable%20Instances%20Challenge%20Lab/CloudyGyn380.sh
+sudo chmod +x CloudyGyn380.sh
+./CloudyGyn380.sh
 ```
 
 ---
@@ -36,3 +36,4 @@ sudo chmod +x fcs380.sh
 
 ### Thanks for watching and stay connected :)
 ---
+
