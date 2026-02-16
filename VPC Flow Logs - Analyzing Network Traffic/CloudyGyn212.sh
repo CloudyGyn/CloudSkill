@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Exit on error
+# Stop on error
 set -e
 
 # -----------------------------
@@ -10,25 +10,18 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}   Cleaning Up VPC Flow Logs Lab${NC}"
+echo -e "${BLUE}   VPC Flow Logs Lab Setup Starting${NC}"
 echo -e "${BLUE}========================================${NC}"
 
 # -----------------------------
 # VARIABLES
 # -----------------------------
-PROJECT_ID=$(gcloud config get-value project)
-ZONE=${ZONE:-us-central1-a}
-REGION="${ZONE%-*}"
-
-NETWORK=vpc-net
-SUBNET=vpc-subnet
-VM_NAME=web-server
-FIREWALL_RULE=allow-http-ssh
-DATASET=bq_vpcflows
-SINK_NAME=vpc-flow-sink
+export PROJECT_ID=$DEVSHELL_PROJECT_ID
+export ZONE=${ZONE:-us-central1-a}
+export REGION="${ZONE%-*}"
 
 echo -e "${YELLOW}Project:${NC} $PROJECT_ID"
 echo -e "${YELLOW}Zone:${NC} $ZONE"
@@ -36,206 +29,119 @@ echo -e "${YELLOW}Region:${NC} $REGION"
 echo ""
 
 # -----------------------------
-# DELETE VM
+# CREATE VPC
 # -----------------------------
-echo -e "${YELLOW}Deleting VM...${NC}"
-gcloud compute instances delete $VM_NAME --zone=$ZONE --quiet 2>/dev/null \
-    && echo -e "${GREEN}VM deleted ✔${NC}" \
-    || echo -e "${RED}VM not found or already deleted ✖${NC}"
+echo -e "${YELLOW}Creating VPC Network...${NC}"
+gcloud compute networks create vpc-net \
+  --project=$PROJECT_ID \
+  --description="Subscribe to CloudyGyn" \
+  --subnet-mode=custom \
+  --quiet || true
+echo -e "${GREEN}VPC Ready ✔${NC}"
 
 # -----------------------------
-# DELETE FIREWALL RULE
+# CREATE SUBNET
 # -----------------------------
-echo -e "${YELLOW}Deleting Firewall Rule...${NC}"
-gcloud compute firewall-rules delete $FIREWALL_RULE --quiet 2>/dev/null \
-    && echo -e "${GREEN}Firewall rule deleted ✔${NC}" \
-    || echo -e "${RED}Firewall rule not found ✖${NC}"
+echo -e "${YELLOW}Creating Subnet with Flow Logs...${NC}"
+gcloud compute networks subnets create vpc-subnet \
+  --project=$PROJECT_ID \
+  --network=vpc-net \
+  --region=$REGION \
+  --range=10.1.3.0/24 \
+  --enable-flow-logs \
+  --quiet || true
+echo -e "${GREEN}Subnet Ready ✔${NC}"
 
 # -----------------------------
-# DELETE LOGGING SINK
+# FIREWALL RULE 1
 # -----------------------------
-echo -e "${YELLOW}Deleting Logging Sink...${NC}"
-gcloud logging sinks delete $SINK_NAME --quiet 2>/dev/null \
-    && echo -e "${GREEN}Logging sink deleted ✔${NC}" \
-    || echo -e "${RED}Logging sink not found ✖${NC}"
+echo -e "${YELLOW}Creating Firewall Rule (HTTP + SSH)...${NC}"
+gcloud compute firewall-rules create allow-http-ssh \
+  --project=$PROJECT_ID \
+  --direction=INGRESS \
+  --priority=1000 \
+  --network=vpc-net \
+  --action=ALLOW \
+  --rules=tcp:80,tcp:22 \
+  --source-ranges=0.0.0.0/0 \
+  --target-tags=http-server \
+  --quiet || true
+echo -e "${GREEN}Firewall Rule Created ✔${NC}"
 
 # -----------------------------
-# DELETE BIGQUERY DATASET
+# CREATE VM
 # -----------------------------
-echo -e "${YELLOW}Deleting BigQuery Dataset...${NC}"
-bq rm -r -f $PROJECT_ID:$DATASET 2>/dev/null \
-    && echo -e "${GREEN}BigQuery dataset deleted ✔${NC}" \
-    || echo -e "${RED}Dataset not found ✖${NC}"
+echo -e "${YELLOW}Creating VM Instance...${NC}"
+gcloud compute instances create web-server \
+  --zone=$ZONE \
+  --project=$PROJECT_ID \
+  --machine-type=e2-micro \
+  --subnet=vpc-subnet \
+  --tags=http-server \
+  --image-family=debian-11 \
+  --image-project=debian-cloud \
+  --metadata=startup-script='#!/bin/bash
+    apt update
+    apt install apache2 -y
+    systemctl start apache2
+    systemctl enable apache2' \
+  --labels=server=apache \
+  --quiet || true
+echo -e "${GREEN}VM Created ✔${NC}"
 
-# -----------------------------
-# DELETE SUBNET
-# -----------------------------
-echo -e "${YELLOW}Deleting Subnet...${NC}"
-gcloud compute networks subnets delete $SUBNET --region=$REGION --quiet 2>/dev/null \
-    && echo -e "${GREEN}Subnet deleted ✔${NC}" \
-    || echo -e "${RED}Subnet not found ✖${NC}"
-
-# -----------------------------
-# DELETE VPC NETWORK
-# -----------------------------
-echo -e "${YELLOW}Deleting VPC Network...${NC}"
-gcloud compute networks delete $NETWORK --quiet 2>/dev/null \
-    && echo -e "${GREEN}VPC network deleted ✔${NC}" \
-    || echo -e "${RED}VPC network not found ✖${NC}"
-
-echo ""
-echo -e "${BLUE}========================================${NC}"
-echo -e "${GREEN}Cleanup Complete ✅${NC}"
-echo -e "${BLUE}========================================${NC}"
-
-
-# Exit immediately if a command exits with error
-set -e
-
-echo "===== Starting Fully Automated VPC Flow Logs Lab ====="
-
-# -----------------------------
-# VARIABLES
-# -----------------------------
-export PROJECT_ID=$(gcloud config get-value project)
-export ZONE=${ZONE:-us-central1-a}
-export REGION="${ZONE%-*}"
-export NETWORK=vpc-net
-export SUBNET=vpc-subnet
-export VM_NAME=web-server
-export FIREWALL_RULE=allow-http-ssh
-export DATASET=bq_vpcflows
-export SINK_NAME=vpc-flow-sink
-
-echo "Project: $PROJECT_ID"
-echo "Zone: $ZONE"
-echo "Region: $REGION"
-
-# -----------------------------
-# ENABLE REQUIRED APIS
-# -----------------------------
-echo "Enabling required APIs..."
-gcloud services enable compute.googleapis.com \
-    logging.googleapis.com \
-    bigquery.googleapis.com
-
-# -----------------------------
-# CREATE VPC NETWORK
-# -----------------------------
-echo "Creating VPC..."
-gcloud compute networks create $NETWORK \
-    --subnet-mode=custom \
-    --description="Custom VPC for Flow Logs Lab" \
-    --quiet || true
-
-# -----------------------------
-# CREATE SUBNET WITH FLOW LOGS
-# -----------------------------
-echo "Creating Subnet with Flow Logs..."
-gcloud compute networks subnets create $SUBNET \
-    --network=$NETWORK \
-    --region=$REGION \
-    --range=10.1.3.0/24 \
-    --enable-flow-logs \
-    --quiet || true
-
-# -----------------------------
-# CREATE FIREWALL RULE
-# -----------------------------
-echo "Creating Firewall Rule..."
-gcloud compute firewall-rules create $FIREWALL_RULE \
-    --network=$NETWORK \
-    --direction=INGRESS \
-    --priority=1000 \
-    --action=ALLOW \
-    --rules=tcp:80,tcp:22 \
-    --source-ranges=0.0.0.0/0 \
-    --target-tags=http-server \
-    --quiet || true
-
-# -----------------------------
-# CREATE VM INSTANCE
-# -----------------------------
-echo "Creating VM instance..."
-gcloud compute instances create $VM_NAME \
-    --zone=$ZONE \
-    --machine-type=e2-micro \
-    --subnet=$SUBNET \
-    --tags=http-server \
-    --image-family=debian-11 \
-    --image-project=debian-cloud \
-    --metadata=startup-script='#!/bin/bash
-        apt update
-        apt install apache2 -y
-        systemctl start apache2
-        systemctl enable apache2' \
-    --labels=server=apache \
-    --quiet || true
-
-# -----------------------------
-# WAIT FOR VM
-# -----------------------------
-echo "Waiting for VM to initialize..."
+echo -e "${YELLOW}Waiting for VM to initialize...${NC}"
 sleep 40
+
+# -----------------------------
+# FIREWALL RULE 2 (FIXED NETWORK)
+# -----------------------------
+echo -e "${YELLOW}Creating Additional HTTP Firewall Rule...${NC}"
+gcloud compute firewall-rules create allow-http \
+  --project=$PROJECT_ID \
+  --network=vpc-net \
+  --allow=tcp:80 \
+  --source-ranges=0.0.0.0/0 \
+  --target-tags=http-server \
+  --description="Allow HTTP traffic" \
+  --quiet || true
+echo -e "${GREEN}HTTP Rule Ready ✔${NC}"
 
 # -----------------------------
 # CREATE BIGQUERY DATASET
 # -----------------------------
-echo "Creating BigQuery dataset..."
-bq --location=US mk --dataset $PROJECT_ID:$DATASET || true
-
-# -----------------------------
-# CREATE LOGGING SINK (VPC FLOW LOGS → BQ)
-# -----------------------------
-echo "Creating Logging Sink..."
-gcloud logging sinks create $SINK_NAME \
-    bigquery.googleapis.com/projects/$PROJECT_ID/datasets/$DATASET \
-    --log-filter='resource.type="gce_subnetwork"
-                  logName="projects/'$PROJECT_ID'/logs/compute.googleapis.com%2Fvpc_flows"' \
-    --quiet || true
-
-# -----------------------------
-# GRANT BQ PERMISSIONS TO SINK
-# -----------------------------
-echo "Granting BigQuery permissions to sink..."
-
-SINK_SA=$(gcloud logging sinks describe $SINK_NAME \
-    --format='value(writerIdentity)')
-
-bq show --format=prettyjson $PROJECT_ID:$DATASET > /dev/null
-
-bq update --dataset \
-    --add_iam_member=member:$SINK_SA,role:roles/bigquery.dataEditor \
-    $PROJECT_ID:$DATASET
+echo -e "${YELLOW}Creating BigQuery Dataset...${NC}"
+bq --location=US mk $PROJECT_ID:bq_vpcflows 2>/dev/null || true
+echo -e "${GREEN}BigQuery Dataset Ready ✔${NC}"
 
 # -----------------------------
 # GENERATE TRAFFIC
 # -----------------------------
-echo "Generating HTTP traffic..."
+echo -e "${YELLOW}Generating Traffic...${NC}"
 
-CP_IP=$(gcloud compute instances describe $VM_NAME \
-    --zone=$ZONE \
-    --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+CP_IP=$(gcloud compute instances describe web-server \
+  --zone=$ZONE \
+  --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
 
-for i in {1..50}
-do
-    curl -s http://$CP_IP > /dev/null
+export MY_SERVER=$CP_IP
+
+for ((i=1;i<=50;i++)); do
+  curl -s $MY_SERVER > /dev/null
 done
 
-echo "Traffic generated."
+echo -e "${GREEN}Traffic Generated ✔${NC}"
 
 # -----------------------------
-# SUCCESS MESSAGE
+# FINAL LINKS (UNCHANGED)
 # -----------------------------
-echo "========================================"
-echo "LAB SETUP COMPLETE"
-echo "========================================"
-echo "VM External IP: http://$CP_IP"
 echo ""
-echo "View Flow Logs:"
-echo "https://console.cloud.google.com/logs/query?project=$PROJECT_ID"
+echo -e "${BLUE}========================================${NC}"
+echo -e "${GREEN}Lab Setup Complete ✅${NC}"
+echo -e "${BLUE}========================================${NC}"
+
 echo ""
-echo "BigQuery Dataset:"
-echo "https://console.cloud.google.com/bigquery?project=$PROJECT_ID"
+echo -e "${YELLOW}Open Firewall link:${NC}"
+echo "https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/details/allow-http-ssh?project=$DEVSHELL_PROJECT_ID"
+
 echo ""
-echo "========================================"
+echo -e "${YELLOW}Open Sink link:${NC}"
+echo "https://console.cloud.google.com/logs/query;query=resource.type%3D%22gce_subnetwork%22%0Alog_name%3D%22projects%2F$DEVSHELL_PROJECT_ID%2Flogs%2Fcompute.googleapis.com%252Fvpc_flows%22;cursorTimestamp=2024-06-03T07:20:00.734122029Z;duration=PT1H?project=$DEVSHELL_PROJECT_ID"
