@@ -18,7 +18,7 @@ export ZONE=
 ```
 
 ```
-curl -LO raw.githubusercontent.com/CloudyGyn/CloudSkill/master/VPC%20Flow%20Logs%20-20%Analyzing%20Network%20Traffic/CloudyGyn212.sh
+curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/VPC%20Flow%20Logs%20-20%Analyzing%20Network%20Traffic/CloudyGyn212.sh
 sudo chmod +x CloudyGyn212.sh
 ./CloudyGyn212.sh
 ```
@@ -44,4 +44,5 @@ for ((i=1;i<=50;i++)); do curl $MY_SERVER; done
 # <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [CloudyGyn](https://www.youtube.com/@CloudyGynOfficial) Don't Forget to like share & subscribe
 
 ### Thanks for watching and stay connected :)
+
 ---
