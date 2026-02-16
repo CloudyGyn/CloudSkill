@@ -1,46 +1,152 @@
+#!/bin/bash
+
+# Exit immediately if a command exits with error
+set -e
+
+echo "===== Starting Fully Automated VPC Flow Logs Lab ====="
+
+# -----------------------------
+# VARIABLES
+# -----------------------------
+export PROJECT_ID=$(gcloud config get-value project)
+export ZONE=${ZONE:-us-central1-a}
 export REGION="${ZONE%-*}"
+export NETWORK=vpc-net
+export SUBNET=vpc-subnet
+export VM_NAME=web-server
+export FIREWALL_RULE=allow-http-ssh
+export DATASET=bq_vpcflows
+export SINK_NAME=vpc-flow-sink
 
+echo "Project: $PROJECT_ID"
+echo "Zone: $ZONE"
+echo "Region: $REGION"
 
-gcloud compute networks create vpc-net --project=$DEVSHELL_PROJECT_ID --description="Subscribe to CloudyGyn" --subnet-mode=custom
+# -----------------------------
+# ENABLE REQUIRED APIS
+# -----------------------------
+echo "Enabling required APIs..."
+gcloud services enable compute.googleapis.com \
+    logging.googleapis.com \
+    bigquery.googleapis.com
 
+# -----------------------------
+# CREATE VPC NETWORK
+# -----------------------------
+echo "Creating VPC..."
+gcloud compute networks create $NETWORK \
+    --subnet-mode=custom \
+    --description="Custom VPC for Flow Logs Lab" \
+    --quiet || true
 
-gcloud compute networks subnets create vpc-subnet --project=$DEVSHELL_PROJECT_ID --network=vpc-net --region=$REGION --range=10.1.3.0/24 --enable-flow-logs
+# -----------------------------
+# CREATE SUBNET WITH FLOW LOGS
+# -----------------------------
+echo "Creating Subnet with Flow Logs..."
+gcloud compute networks subnets create $SUBNET \
+    --network=$NETWORK \
+    --region=$REGION \
+    --range=10.1.3.0/24 \
+    --enable-flow-logs \
+    --quiet || true
 
-
-sleep 100
-
-
-gcloud compute --project=$DEVSHELL_PROJECT_ID firewall-rules create allow-http-ssh --direction=INGRESS --priority=1000 --network=vpc-net --action=ALLOW --rules=tcp:80,tcp:22 --source-ranges=0.0.0.0/0 --target-tags=http-server
-
-
-gcloud compute instances create web-server --zone=$ZONE --project=$DEVSHELL_PROJECT_ID --machine-type=e2-micro --subnet=vpc-subnet --network=vpc-net --tags=http-server --image-family=debian-10 --image-project=debian-cloud \
-    --metadata=startup-script='#!/bin/bash
-        sudo apt update
-        sudo apt install apache2 -y
-        sudo systemctl start apache2
-        sudo systemctl enable apache2' \
-    --labels=server=apache
-
-
-gcloud compute firewall-rules create allow-http \
-    --allow=tcp:80 \
+# -----------------------------
+# CREATE FIREWALL RULE
+# -----------------------------
+echo "Creating Firewall Rule..."
+gcloud compute firewall-rules create $FIREWALL_RULE \
+    --network=$NETWORK \
+    --direction=INGRESS \
+    --priority=1000 \
+    --action=ALLOW \
+    --rules=tcp:80,tcp:22 \
     --source-ranges=0.0.0.0/0 \
     --target-tags=http-server \
-    --description="Allow HTTP traffic"
+    --quiet || true
 
+# -----------------------------
+# CREATE VM INSTANCE
+# -----------------------------
+echo "Creating VM instance..."
+gcloud compute instances create $VM_NAME \
+    --zone=$ZONE \
+    --machine-type=e2-micro \
+    --subnet=$SUBNET \
+    --tags=http-server \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+        apt update
+        apt install apache2 -y
+        systemctl start apache2
+        systemctl enable apache2' \
+    --labels=server=apache \
+    --quiet || true
 
-bq mk bq_vpcflows
+# -----------------------------
+# WAIT FOR VM
+# -----------------------------
+echo "Waiting for VM to initialize..."
+sleep 40
 
+# -----------------------------
+# CREATE BIGQUERY DATASET
+# -----------------------------
+echo "Creating BigQuery dataset..."
+bq --location=US mk --dataset $PROJECT_ID:$DATASET || true
 
-CP_IP=$(gcloud compute instances describe web-server --zone=$ZONE --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+# -----------------------------
+# CREATE LOGGING SINK (VPC FLOW LOGS → BQ)
+# -----------------------------
+echo "Creating Logging Sink..."
+gcloud logging sinks create $SINK_NAME \
+    bigquery.googleapis.com/projects/$PROJECT_ID/datasets/$DATASET \
+    --log-filter='resource.type="gce_subnetwork"
+                  logName="projects/'$PROJECT_ID'/logs/compute.googleapis.com%2Fvpc_flows"' \
+    --quiet || true
 
-export MY_SERVER=$CP_IP
+# -----------------------------
+# GRANT BQ PERMISSIONS TO SINK
+# -----------------------------
+echo "Granting BigQuery permissions to sink..."
 
-for ((i=1;i<=50;i++)); do curl $MY_SERVER; done
+SINK_SA=$(gcloud logging sinks describe $SINK_NAME \
+    --format='value(writerIdentity)')
 
+bq show --format=prettyjson $PROJECT_ID:$DATASET > /dev/null
 
-echo "Open Firewall link"
-echo "https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/details/allow-http-ssh?project=$DEVSHELL_PROJECT_ID"
+bq update --dataset \
+    --add_iam_member=member:$SINK_SA,role:roles/bigquery.dataEditor \
+    $PROJECT_ID:$DATASET
 
-echo "Open Sink link"
-echo "https://console.cloud.google.com/logs/query;query=resource.type%3D%22gce_subnetwork%22%0Alog_name%3D%22projects%2F$DEVSHELL_PROJECT_ID%2Flogs%2Fcompute.googleapis.com%252Fvpc_flows%22;cursorTimestamp=2024-06-03T07:20:00.734122029Z;duration=PT1H?project=$DEVSHELL_PROJECT_ID"
+# -----------------------------
+# GENERATE TRAFFIC
+# -----------------------------
+echo "Generating HTTP traffic..."
+
+CP_IP=$(gcloud compute instances describe $VM_NAME \
+    --zone=$ZONE \
+    --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+
+for i in {1..50}
+do
+    curl -s http://$CP_IP > /dev/null
+done
+
+echo "Traffic generated."
+
+# -----------------------------
+# SUCCESS MESSAGE
+# -----------------------------
+echo "========================================"
+echo "LAB SETUP COMPLETE"
+echo "========================================"
+echo "VM External IP: http://$CP_IP"
+echo ""
+echo "View Flow Logs:"
+echo "https://console.cloud.google.com/logs/query?project=$PROJECT_ID"
+echo ""
+echo "BigQuery Dataset:"
+echo "https://console.cloud.google.com/bigquery?project=$PROJECT_ID"
+echo ""
+echo "========================================"
