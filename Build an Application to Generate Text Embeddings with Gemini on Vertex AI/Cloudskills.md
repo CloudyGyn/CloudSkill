@@ -24,7 +24,7 @@ def text_embedding(prompt):
     return vector
 
 if __name__ == "__main__":
-    sample_text = "Future Cloud Skill"
+    sample_text = "CloudyGyn"
     print(f"Processing text: '{sample_text}'")
     text_embedding(sample_text)
 
@@ -39,11 +39,9 @@ if __name__ == "__main__":
 
 - <img src="https://github.com/user-attachments/assets/a4a4b767-151c-461d-bca1-da6d4c0cd68a" alt="icon" width="25" height="25"> **Join our [Telegram Channel](https://t.me/CloudyGyn)
 
-
 ---
 
 # <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [CloudyGyn](https://www.youtube.com/@CloudyGynOfficial) Don't Forget to like share & subscribe
 
 ### Thanks for watching and stay connected :)
 ---
-
