@@ -1,7 +1,5 @@
 ### 💡 Lab Link: [Configure Cloud Storage Bucket for Website Hosting using gsutil](https://www.skills.google/games/6987/labs/43424)
 
-
-
 ---
 
 ### ⚠️ Disclaimer
@@ -32,12 +30,12 @@ gsutil acl set -a public-read gs://$BUCKET/logo.jpg
 
 ### 🌐 Join Our Community
 
-- <img src="https://github.com/user-attachments/assets/a4a4b767-151c-461d-bca1-da6d4c0cd68a" alt="icon" width="25" height="25"> **Join Our [Telegram Channel](https://t.me/FutureCloudSkill)
+- <img src="https://github.com/user-attachments/assets/a4a4b767-151c-461d-bca1-da6d4c0cd68a" alt="icon" width="25" height="25"> **Join our [Telegram Channel](https://t.me/CloudyGyn)
 
 
 ---
 
-# <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [Future Cloud Skill](https://www.youtube.com/@FutureCloudSkill) Don't Forget to like share & subscribe
+# <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [CloudyGyn](https://www.youtube.com/@CloudyGynOfficial) Don't Forget to like share & subscribe
 
 ### Thanks for watching and stay connected :)
 ---
