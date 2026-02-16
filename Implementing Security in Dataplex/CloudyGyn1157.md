@@ -1,6 +1,4 @@
-
 ### 💡 Lab Link: [Implementing Security in Dataplex - GSP1157](https://www.cloudskillsboost.google/focuses/67213?parent=catalog)
-
 
 ---
 
@@ -32,12 +30,11 @@ sudo chmod +x CloudyGyn1157.sh
 
 ### 🌐 Join our Community
 
-- <img src="https://github.com/user-attachments/assets/a4a4b767-151c-461d-bca1-da6d4c0cd68a" alt="icon" width="25" height="25"> **Join our [Telegram Channel](https://t.me/FutureCloudSkill) for the latest updates
-
+- <img src="https://github.com/user-attachments/assets/a4a4b767-151c-461d-bca1-da6d4c0cd68a" alt="icon" width="25" height="25"> **Join our [Telegram Channel](https://t.me/CloudyGyn)
 
 ---
 
-# <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [Future Cloud Skill](https://www.youtube.com/@FutureCloudSkill) Don't Forget to like share & subscribe
+# <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [CloudyGyn](https://www.youtube.com/@CloudyGynOfficial) Don't Forget to like share & subscribe
 
 ### Thanks for watching and stay connected :)
 ---
