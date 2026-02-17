@@ -1,4 +1,4 @@
-### 💡 Lab Link: [VPC Flow Logs - Analyzing Network Traffic - GSP212](https://www.skills.google/focuses/1231?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=72756429)
+### 💡 Lab Link: [VPC Networks - Controlling Access - GSP213](https://www.skills.google/focuses/1231?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=72756429)
 
 ---
 
@@ -13,8 +13,7 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/VPC%20Networks%20-%20Controlling%20Access
-CloudyGyn213.sh
+curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/VPC%20Networks%20-%20Controlling%20Access/CloudyGyn213.sh
 sudo chmod +x CloudyGyn213.sh
 ./CloudyGyn213.sh
 ```
@@ -33,3 +32,4 @@ sudo chmod +x CloudyGyn213.sh
 ### Thanks for watching and stay connected :)
 
 ---
+
