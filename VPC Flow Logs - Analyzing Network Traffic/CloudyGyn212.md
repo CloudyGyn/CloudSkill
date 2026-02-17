@@ -12,11 +12,6 @@
 
 ### 🚨Copy and run the below commands in Cloud Shell:
 
-# Set ZONE
-```
-export ZONE=
-```
-
 ```
 curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/VPC%20Flow%20Logs%20-%20Analyzing%20Network%20Traffic/CloudyGyn212.sh
 sudo chmod +x CloudyGyn212.sh
@@ -46,5 +41,6 @@ for ((i=1;i<=50;i++)); do curl $MY_SERVER; done
 ### Thanks for watching and stay connected :)
 
 ---
+
 
 
