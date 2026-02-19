@@ -88,4 +88,6 @@ EOF
 gcloud compute scp greenssh.sh green:/tmp --zone=$ZONE --quiet
 gcloud compute ssh green --zone=$ZONE --quiet --command="bash /tmp/greenssh.sh"
 
-echo "Setup Complete ✅"
+echo -e "\033[34m====================================\033[0m"
+echo -e "\033[32m   Script execution completed successfully. ✅\033[0m"
+echo -e "\033[34m====================================\033[0m"
