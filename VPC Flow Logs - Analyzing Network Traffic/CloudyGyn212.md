@@ -1,4 +1,4 @@
-### 💡 Lab Link: [VPC Flow Logs - Analyzing Network Traffic - GSP212](https://www.skills.google/focuses/1236?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=72594698)
+### 💡 Lab Link: [VPC Flow Logs Analyzing Network Traffic - GSP212](https://www.skills.google/focuses/1236?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=72594698)
 
 ---
 
@@ -41,6 +41,7 @@ for ((i=1;i<=50;i++)); do curl $MY_SERVER; done
 ### Thanks for watching and stay connected :)
 
 ---
+
 
 
 
