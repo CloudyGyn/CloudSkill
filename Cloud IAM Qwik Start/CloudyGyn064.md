@@ -13,6 +13,10 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
+export USERNAME_2=
+```
+
+```
 curl -LO "https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Cloud%20IAM%20Qwik%20Start/CloudyGyn064.sh"
 chmod +x CloudyGyn064.sh
 ./CloudyGyn064.sh
@@ -33,6 +37,7 @@ chmod +x CloudyGyn064.sh
 
 
 ---
+
 
 
 
