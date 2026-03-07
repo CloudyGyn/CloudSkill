@@ -13,8 +13,8 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Cloud%20IAM%20Qwik%20Start/CloudyGyn.sh
-chmod +x CloudyGyn.sh
+curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Cloud%20IAM%20Qwik%20Start/CloudyGyn064.sh
+chmod +x CloudyGyn064.sh
 ./CloudyGyn.sh
 ```
 
@@ -30,5 +30,6 @@ chmod +x CloudyGyn.sh
 # <img src="https://github.com/user-attachments/assets/6ee41001-c795-467c-8d96-06b56c246b9c" alt="icon" width="45" height="45"> [CloudyGyn](https://www.youtube.com/@CloudyGynOfficial) Don't Forget to like share & subscribe
 
 ### Thanks for watching and stay connected :)
+
 
 ---
