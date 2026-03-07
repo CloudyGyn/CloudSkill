@@ -5,11 +5,13 @@ NO_COLOR="\033[0m"
 
 read -p "${YELLOW_COLOR}Enter USERNAME 2 (email): ${NO_COLOR}" USERNAME_2
 
-gsutil mb -l us -b on gs://$DEVSHELL_PROJECT_ID
+BUCKET_NAME="${DEVSHELL_PROJECT_ID}-bucket"
+
+gsutil mb -l us -b on gs://$BUCKET_NAME
 
 echo "Subscribe to CloudyGyn" > sample.txt
 
-gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID
+gsutil cp sample.txt gs://$BUCKET_NAME
 
 gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID \
 --member="user:$USERNAME_2" \
