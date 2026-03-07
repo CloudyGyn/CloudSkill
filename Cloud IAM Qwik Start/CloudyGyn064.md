@@ -13,7 +13,7 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Cloud%20IAM%20Qwik%20Start/CloudyGyn064.sh
+curl -LO "https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Cloud%20IAM%20Qwik%20Start/CloudyGyn064.sh"
 chmod +x CloudyGyn064.sh
 ./CloudyGyn064.sh
 ```
@@ -33,4 +33,5 @@ chmod +x CloudyGyn064.sh
 
 
 ---
+
 
