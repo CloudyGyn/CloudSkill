@@ -17,7 +17,7 @@ export ZONE=
 ````
 
 ```
-curl -LO raw.githubusercontent.com/CloudyGyn/Cloudskill/master/Using%20OpenTSDB%20to%20Monitor%20Time-Series%20Data%20on%20Cloud%20Platform/CloudyGyn142.sh
+curl -LO https://raw.githubusercontent.com/CloudyGyn/Cloudskill/master/Using%20OpenTSDB%20to%20Monitor%20Time-Series%20Data%20on%20Cloud%20Platform/CloudyGyn142.sh
 sudo chmod +x CloudyGyn142.sh
 ./CloudyGyn142.sh
 ```
