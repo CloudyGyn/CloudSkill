@@ -10,7 +10,7 @@
 
 ---
 
-### Update User.view:
+### Update `User.view`:
 
 ```
 view: users {
@@ -133,7 +133,7 @@ view: users {
   }
 }
 ```
-### Update order_item.view
+### Update `order_item.view`:
 
 ```
 view: order_items {
