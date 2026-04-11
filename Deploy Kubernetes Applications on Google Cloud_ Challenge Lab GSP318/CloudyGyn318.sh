@@ -52,10 +52,10 @@ echo "${GREEN}Using Project: $PROJECT_ID${RESET}"
 # ---------- Enable APIs ----------
 
 echo "${BLUE}Enabling required APIs...${RESET}"
-gcloud services enable 
-artifactregistry.googleapis.com 
-container.googleapis.com 
-cloudbuild.googleapis.com
+gcloud services enable \
+  artifactregistry.googleapis.com \
+  container.googleapis.com \
+  cloudbuild.googleapis.com
 
 # ---------- Download App ----------
 
