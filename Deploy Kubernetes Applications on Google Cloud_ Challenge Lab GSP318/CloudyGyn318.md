@@ -13,7 +13,7 @@
 ### 🚨Copy and run the below commands in Cloud Shell:
 
 ```
-curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/master/Deploy%20Kubernetes%20Applications%20on%20Google%20Cloud%3A%20Challenge%20Lab/CloudyGyn318.sh
+curl -LO "https://raw.githubusercontent.com/CloudyGyn/CloudSkill/main/Deploy%20Kubernetes%20Applications%20on%20Google%20Cloud_%20Challenge%20Lab%20GSP318/CloudyGyn318.sh"
 chmod +x CloudyGyn318.sh
 ./CloudyGyn318.sh
 ```
