@@ -3,45 +3,42 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ---------- Colors ----------
-RED=$(tput setaf 1 2>/dev/null || echo '')
-GREEN=$(tput setaf 2 2>/dev/null || echo '')
-YELLOW=$(tput setaf 3 2>/dev/null || echo '')
-BLUE=$(tput setaf 4 2>/dev/null || echo '')
-CYAN=$(tput setaf 6 2>/dev/null || echo '')
-BOLD=$(tput bold 2>/dev/null || echo '')
-RESET=$(tput sgr0 2>/dev/null || echo '')
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+RESET='\033[0m'
 
-echo "${CYAN}${BOLD}🚀 Starting GSP318 Valkyrie Deployment${RESET}"
-echo "${YELLOW}👉 Subscribe to CloudyGyn${RESET}"
+echo -e "${CYAN}${BOLD}🚀 Starting GSP318 Valkyrie Deployment${RESET}"
+echo -e "${YELLOW}${BOLD}👉 Subscribe to CloudyGyn${RESET}"
 echo
 
-# ---------- Defaults ----------
-REPO="valkyrie-repo"
-IMG="valkyrie-app"
-TAG="v1"
-REGION="us-west1"
-ZONE="us-west1-b"
-CLUSTER="valkyrie-dev"
-
 # ---------- Project ----------
-PROJECT_ID=${DEVSHELL_PROJECT_ID:-$(gcloud config get-value project 2>/dev/null || true)}
+PROJECT_ID=${DEVSHELL_PROJECT_ID:-$(gcloud config get-value project 2>/dev/null)}
 
 if [ -z "$PROJECT_ID" ]; then
-  echo "${RED}❌ No project set${RESET}"
+  echo -e "${RED}❌ No project set${RESET}"
   exit 1
 fi
 
-echo "${GREEN}Project: $PROJECT_ID${RESET}"
+echo -e "${GREEN}📌 Project: $PROJECT_ID${RESET}"
 
-# ---------- Enable APIs (FIXED) ----------
-echo "${BLUE}Enabling APIs...${RESET}"
-gcloud services enable \
-  artifactregistry.googleapis.com \
-  container.googleapis.com \
-  cloudbuild.googleapis.com
+# ---------- Variables ----------
+REGION="us-west1"
+ZONE="us-west1-b"
+REPO="valkyrie-repo"
+IMG="valkyrie-app"
+TAG="v1"
+CLUSTER="valkyrie-dev"
 
-# ---------- Get Source ----------
-echo "${BLUE}Downloading source...${RESET}"
+# ---------- Enable APIs ----------
+echo -e "${BLUE}🔧 Enabling APIs...${RESET}"
+gcloud services enable artifactregistry.googleapis.com container.googleapis.com cloudbuild.googleapis.com
+
+# ---------- Download App ----------
+echo -e "${BLUE}⬇️ Downloading application...${RESET}"
 if [ ! -d valkyrie-app ]; then
   gsutil cp gs://cloud-training/gsp318/valkyrie-app.tgz .
   tar -xzf valkyrie-app.tgz
@@ -61,50 +58,47 @@ EOF
 # ---------- Image ----------
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMG}:${TAG}"
 
-echo "${CYAN}Image: $IMAGE${RESET}"
+echo -e "${CYAN}📦 Image: $IMAGE${RESET}"
 
-# ---------- Artifact Registry (FIXED) ----------
+# ---------- Artifact Registry ----------
+echo -e "${BLUE}📦 Checking Artifact Registry...${RESET}"
 gcloud artifacts repositories describe "$REPO" --location="$REGION" >/dev/null 2>&1 || \
 gcloud artifacts repositories create "$REPO" \
   --repository-format=docker \
   --location="$REGION" \
   --description="GSP318 repo"
 
-# ---------- Auth ----------
 gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet || true
 
 # ---------- Build ----------
-echo "${BLUE}Building image...${RESET}"
+echo -e "${BLUE}🏗️ Building image...${RESET}"
 gcloud builds submit --tag "$IMAGE" .
 
 # ---------- Update YAML ----------
 sed -i "s#IMAGE_HERE#${IMAGE}#g" k8s/deployment.yaml
 
 # ---------- Cluster ----------
-echo "${BLUE}Checking cluster...${RESET}"
-
+echo -e "${BLUE}☸️ Preparing cluster...${RESET}"
 gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE" || \
-gcloud container clusters create "$CLUSTER" \
-  --zone "$ZONE" \
-  --num-nodes=1
+gcloud container clusters create "$CLUSTER" --zone "$ZONE" --num-nodes=1
 
 # ---------- Deploy ----------
-echo "${BLUE}Deploying...${RESET}"
+echo -e "${BLUE}🚀 Deploying to Kubernetes...${RESET}"
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 
-# ---------- Get Service ----------
-echo "${CYAN}Waiting for external IP...${RESET}"
+# ---------- External IP ----------
+echo -e "${YELLOW}⏳ Waiting for External IP...${RESET}"
 
 for i in {1..30}; do
   IP=$(kubectl get svc -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
-  if [ -n "$IP" ]; then
-    echo "${GREEN}✅ Application URL: http://$IP${RESET}"
+  if [ ! -z "$IP" ]; then
+    echo -e "${GREEN}✅ App URL: http://$IP${RESET}"
     break
   fi
   sleep 5
 done
 
 echo
-echo "${GREEN}${BOLD}🎉 GSP318 DEPLOYMENT COMPLETE${RESET}"
-echo "${YELLOW}👉 Subscribe to CloudyGyn${RESET}"
+echo -e "${GREEN}${BOLD}🎉 GSP318 Deployment Completed Successfully!${RESET}"
+echo -e "${CYAN}${BOLD}👉 Subscribe to CloudyGyn 💙${RESET}"
