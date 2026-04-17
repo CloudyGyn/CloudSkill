@@ -22,7 +22,7 @@ export ZONE=
 
 ```
 curl -LO https://raw.githubusercontent.com/CloudyGyn/CloudSkill/main/Deploy%20Kubernetes%20Applications%20on%20Google%20Cloud%3A%20Challenge%20Lab/CloudyGyn318.sh
-chmod +x CloudyGyn318.sh
+sudo chmod +x CloudyGyn318.sh
 ./CloudyGyn318.sh
 ```
 
