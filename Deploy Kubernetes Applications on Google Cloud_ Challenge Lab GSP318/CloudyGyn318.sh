@@ -2,14 +2,24 @@
 set -e
 
 # Variables
-REPO="valkyrie-repo"
-IMAGE="valkyrie-app"
+REPO="valkyrie-docker-repo"
+IMAGE="valkyrie-dev"
 TAG="v1"
-PROJECT_ID=$(gcloud config get-value project)
+
+PROJECT_ID=${DEVSHELL_PROJECT_ID:-$(gcloud config get-value project 2>/dev/null)}
 ZONE=$(gcloud config get-value compute/zone)
 REGION="${ZONE%-*}"
 
-# Download app
+if [ -z "$PROJECT_ID" ] || [ -z "$ZONE" ]; then
+  echo "ERROR: Project or Zone not set"
+  exit 1
+fi
+
+echo "Project: $PROJECT_ID"
+echo "Zone: $ZONE"
+echo "Region: $REGION"
+
+# Download source
 gsutil cp gs://spls/gsp318/valkyrie-app.tgz .
 tar -xzf valkyrie-app.tgz
 cd valkyrie-app
@@ -23,22 +33,25 @@ RUN go install -v
 ENTRYPOINT ["app","-single=true","-port=8080"]
 EOF
 
-# Create repo if needed
-gcloud artifacts repositories describe $REPO --location=$REGION || \
+# Artifact Registry repo
+gcloud artifacts repositories describe $REPO --location=$REGION >/dev/null 2>&1 || \
 gcloud artifacts repositories create $REPO \
   --repository-format=docker \
   --location=$REGION
 
+# Image path
+IMAGE_PATH="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}:${TAG}"
+
 # Build & push
-IMAGE_PATH="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$TAG"
 gcloud builds submit --tag $IMAGE_PATH .
 
-# Update deployment
-sed -i "s#IMAGE_HERE#$IMAGE_PATH#g" k8s/deployment.yaml
+# Update Kubernetes deployment
+sed -i "s#IMAGE_HERE#${IMAGE_PATH}#g" k8s/deployment.yaml
 
-# Deploy
+# Deploy to GKE
 gcloud container clusters get-credentials valkyrie-dev --zone $ZONE
+
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 
-echo "✅ Done"
+echo "DONE"
